@@ -8,14 +8,22 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
 header{background:#10243a;color:white;text-align:center;padding:24px 12px}
-main{max-width:650px;margin:auto;padding:16px}
+header h1{margin:0;font-size:30px}
+header p{margin:8px 0 0;color:#c7d4e8}
+main{max-width:700px;margin:auto;padding:16px}
 .box{background:white;padding:18px;margin:18px 0;border-radius:14px;box-shadow:0 3px 12px #0001}
-input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd5e3;border-radius:8px;font-size:16px}
+input[type="text"],input[type="number"]{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd5e3;border-radius:8px;font-size:16px}
+input[type="file"]{width:100%;padding:10px 0}
 button,.download{display:inline-block;background:#087f8c;color:white;border:0;padding:12px 16px;border-radius:8px;font-size:16px;text-decoration:none;cursor:pointer}
-img{max-width:100%;max-height:300px;object-fit:contain;display:block;margin:12px auto}
-.result{font-weight:bold;color:#087f8c;overflow-wrap:anywhere}
-.small{color:#64748b;font-size:14px}
+button:focus,input:focus{outline:2px solid #087f8c;outline-offset:2px}
+img.preview{max-width:100%;max-height:300px;object-fit:contain;display:block;margin:12px auto}
+.result{font-weight:bold;color:#087f8c;overflow-wrap:anywhere;line-height:1.5}
+.small{color:#64748b;font-size:14px;line-height:1.5}
+.tool-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool{padding:13px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px}
 footer{text-align:center;padding:20px;color:#64748b}
+[hidden]{display:none!important}
+@media(max-width:420px){.tool-list{grid-template-columns:1fr}header h1{font-size:27px}.box{padding:15px}}
 </style>
 </head>
 <body>
@@ -24,42 +32,84 @@ footer{text-align:center;padding:20px;color:#64748b}
 <p>Kaam Batao. Solution Pao.</p>
 </header>
 <main>
-<div class="box">
+<section class="box">
+<h2>🔍 Apna Tool Khojo</h2>
+<p class="small">Apna kaam likho — jaise percentage, photo compress, marks, resume ya PDF.</p>
+<form id="searchForm">
+<input type="text" id="toolSearch" placeholder="Aapko kya kaam karna hai?" aria-label="Search for a tool">
+<button type="submit">Search</button>
+</form>
+<p id="searchResult" class="result" aria-live="polite"></p>
+<div class="tool-list">
+<div class="tool">🧮 <strong>Percentage Calculator</strong><p class="small">Marks ka percentage nikalo.</p></div>
+<div class="tool">🖼️ <strong>Image Compressor</strong><p class="small">Photo ka size kam karo.</p></div>
+<div class="tool">📄 <strong>Resume Maker</strong><p class="small">Coming soon.</p></div>
+<div class="tool">📁 <strong>PDF Tools</strong><p class="small">Coming soon.</p></div>
+</div>
+</section>
+
+<section class="box" id="imageTool">
 <h2>🖼️ Image Compressor</h2>
-<p class="small">Photo choose karo aur uska size kam karo.</p>
+<p class="small">Photo choose karo aur uska size kam karo. Image isi browser mein process hoti hai.</p>
 <label for="photo">Apni photo select karo</label>
 <input type="file" id="photo" accept="image/*">
-<img id="preview" alt="Photo preview" hidden>
+<img id="preview" class="preview" alt="Photo preview" hidden>
 <label for="quality">Image quality: <span id="qvalue">70%</span></label>
-<input type="range" id="quality" min="10" max="95" value="70">
-<button id="compress">Compress Image</button>
-<p id="imageResult" class="result"></p>
+<input type="range" id="quality" min="10" max="95" value="70" style="width:100%">
+<button id="compress" type="button">Compress Image</button>
+<p id="imageResult" class="result" aria-live="polite"></p>
 <a id="download" class="download" hidden download="kaamkhoj-compressed.jpg">Download Compressed Photo</a>
-<p class="small">Photo browser mein process hoti hai; upload server par nahi hoti.</p>
-</div>
+<p class="small">Note: JPG transparency support nahi karta, isliye transparent image ka background white ho sakta hai.</p>
+</section>
 
-<div class="box">
+<section class="box" id="percentageTool">
 <h2>🧮 Percentage Calculator</h2>
 <label for="marks">Obtained Marks</label>
 <input type="number" id="marks" min="0" placeholder="Jaise 375">
 <label for="total">Total Marks</label>
 <input type="number" id="total" min="1" placeholder="Jaise 500">
-<button id="calculate">Calculate Percentage</button>
-<p id="answer" class="result"></p>
-</div>
+<button id="calculate" type="button">Calculate Percentage</button>
+<p id="answer" class="result" aria-live="polite"></p>
+</section>
 
-<div class="box">
-<h2>📄 Resume Maker</h2>
-<p>Coming soon!</p>
-</div>
-<div class="box">
-<h2>📁 PDF Tools</h2>
-<p>Coming soon!</p>
-</div>
+<section class="box" id="moreTools">
+<h2>More Tools</h2>
+<p>📄 Resume Maker — Coming soon</p>
+<p>📁 PDF Tools — Coming soon</p>
+</section>
 </main>
 <footer>KaamKhoj © 2026</footer>
 
 <script>
+document.getElementById("searchForm").addEventListener("submit",function(event){
+ event.preventDefault();
+ const q=document.getElementById("toolSearch").value.trim().toLowerCase();
+ const result=document.getElementById("searchResult");
+ if(!q){result.textContent="Pehle apna kaam likho.";return;}
+ if(q.includes("percentage")||q.includes("marks")||q.includes("calculator")||q.includes("result")){
+   result.textContent="Percentage Calculator neeche hai. Wahan jaane ke liye button dabao.";
+   addJumpButton(result,"Open Percentage Calculator","percentageTool");
+ }else if(q.includes("photo")||q.includes("image")||q.includes("compress")||q.includes("picture")){
+   result.textContent="Image Compressor neeche hai. Wahan jaane ke liye button dabao.";
+   addJumpButton(result,"Open Image Compressor","imageTool");
+ }else if(q.includes("resume")||q.includes("cv")){
+   result.textContent="Resume Maker abhi ban raha hai. Ye feature jald aayega.";
+ }else if(q.includes("pdf")){
+   result.textContent="PDF Tools abhi ban rahe hain. Ye feature jald aayega.";
+ }else{
+   result.textContent="Is kaam ka tool abhi available nahi hai. Percentage, marks, photo, image, resume ya PDF search karke dekho.";
+ }
+});
+function addJumpButton(parent,label,targetId){
+ const old=parent.querySelector("button");
+ if(old)old.remove();
+ const button=document.createElement("button");
+ button.type="button";button.textContent=label;button.style.marginTop="8px";
+ button.addEventListener("click",()=>document.getElementById(targetId).scrollIntoView({behavior:"smooth"}));
+ parent.appendChild(document.createElement("br"));
+ parent.appendChild(button);
+}
+
 const photo=document.getElementById("photo");
 const preview=document.getElementById("preview");
 const quality=document.getElementById("quality");
@@ -67,85 +117,45 @@ const qvalue=document.getElementById("qvalue");
 const imageResult=document.getElementById("imageResult");
 const download=document.getElementById("download");
 let image=null,originalURL=null,compressedURL=null;
-
 function sizeText(bytes){
  if(bytes<1024)return bytes+" B";
  if(bytes<1048576)return (bytes/1024).toFixed(1)+" KB";
  return (bytes/1048576).toFixed(2)+" MB";
 }
-
 photo.addEventListener("change",()=>{
- image=null;
- imageResult.textContent="";
- download.hidden=true;
+ image=null;imageResult.textContent="";download.hidden=true;
  if(originalURL)URL.revokeObjectURL(originalURL);
  if(compressedURL)URL.revokeObjectURL(compressedURL);
- originalURL=null;compressedURL=null;
- const file=photo.files[0];
- if(!file)return;
- if(!file.type.startsWith("image/")){
- imageResult.textContent="Please select a valid image.";
- photo.value="";return;
- }
+ originalURL=null;compressedURL=null;preview.hidden=true;
+ const file=photo.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){imageResult.textContent="Please select a valid image.";photo.value="";return;}
  originalURL=URL.createObjectURL(file);
  const img=new Image();
- img.onload=()=>{
- image=img;
- preview.src=originalURL;
- preview.hidden=false;
- imageResult.textContent="Original size: "+sizeText(file.size);
- };
- img.onerror=()=>imageResult.textContent="Image open nahi hui. Doosri photo try karo.";
+ img.onload=()=>{image=img;preview.src=originalURL;preview.hidden=false;imageResult.textContent="Original size: "+sizeText(file.size)+" • "+img.naturalWidth+" × "+img.naturalHeight;};
+ img.onerror=()=>{imageResult.textContent="Image open nahi hui. Doosri photo try karo.";};
  img.src=originalURL;
 });
-
-quality.addEventListener("input",()=>{
- qvalue.textContent=quality.value+"%";
-});
-
+quality.addEventListener("input",()=>{qvalue.textContent=quality.value+"%";});
 document.getElementById("compress").addEventListener("click",()=>{
- if(!image){
- imageResult.textContent="Pehle photo select karo.";
- return;
- }
- const canvas=document.createElement("canvas");
- canvas.width=image.naturalWidth;
- canvas.height=image.naturalHeight;
- const ctx=canvas.getContext("2d");
- ctx.fillStyle="#ffffff";
- ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.drawImage(image,0,0);
+ if(!image){imageResult.textContent="Pehle photo select karo.";return;}
+ imageResult.textContent="Compress ho raha hai...";download.hidden=true;
+ const canvas=document.createElement("canvas");canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+ const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
  canvas.toBlob(blob=>{
- if(!blob){
- imageResult.textContent="Compression failed. Doosri photo try karo.";
- return;
- }
- if(compressedURL)URL.revokeObjectURL(compressedURL);
- compressedURL=URL.createObjectURL(blob);
- const oldSize=photo.files[0].size;
- const newSize=blob.size;
- const diff=((oldSize-newSize)/oldSize)*100;
- imageResult.textContent="Original: "+sizeText(oldSize)+
- " | New: "+sizeText(newSize)+
- (diff>=0?" | Size reduced by "+diff.toFixed(1)+"%":
- " | New file is "+Math.abs(diff).toFixed(1)+"% larger");
- download.href=compressedURL;
- download.hidden=false;
+  if(!blob){imageResult.textContent="Compression failed. Doosri photo try karo.";return;}
+  if(compressedURL)URL.revokeObjectURL(compressedURL);
+  compressedURL=URL.createObjectURL(blob);
+  const oldSize=photo.files[0].size,newSize=blob.size,diff=(oldSize-newSize)/oldSize*100;
+  imageResult.textContent="Original: "+sizeText(oldSize)+" | Compressed: "+sizeText(newSize)+(diff>=0?" | Size reduced by "+diff.toFixed(1)+"%":" | Output "+Math.abs(diff).toFixed(1)+"% larger");
+  download.href=compressedURL;download.hidden=false;
  },"image/jpeg",Number(quality.value)/100);
 });
-
 document.getElementById("calculate").addEventListener("click",()=>{
- const m=document.getElementById("marks").value;
- const t=document.getElementById("total").value;
- const answer=document.getElementById("answer");
- const marks=Number(m),total=Number(t);
- if(m===""||t===""||total<=0||marks<0||marks>total){
- answer.textContent="Sahi marks aur total marks bharo.";
- return;
- }
+ const m=document.getElementById("marks").value,t=document.getElementById("total").value;
+ const answer=document.getElementById("answer"),marks=Number(m),total=Number(t);
+ if(m===""||t===""||total<=0||marks<0||marks>total){answer.textContent="Sahi marks aur total marks bharo.";return;}
  answer.textContent="Your Percentage: "+(marks/total*100).toFixed(2)+"%";
 });
 </script>
 </body>
 </html>
-  
