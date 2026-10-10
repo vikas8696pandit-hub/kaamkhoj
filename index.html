@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KaamKhoj</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f1f5f9; color: #172033; }
+    header { background: #10243a; color: white; text-align: center; padding: 22px 12px; }
+    main { max-width: 600px; margin: auto; padding: 16px; }
+    .box { background: white; padding: 18px; margin: 18px 0; border-radius: 14px; box-shadow: 0 3px 12px #0000000b; }
+    input { width: 90%; max-width: 100%; padding: 12px; margin: 7px 0; border: 1px solid #ccd5e3; border-radius: 8px; font-size: 16px; }
+    button { background: #087f8c; color: white; border: none; padding: 12px 18px; margin-top: 8px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    #answer { font-weight: bold; color: #087f8c; }
+    footer { text-align: center; padding: 20px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <header><h1>🔎 KaamKhoj</h1><p>Kaam Batao. Solution Pao.</p></header>
+  <main>
+    <div class="box">
+      <h2>Apna Tool Khojo</h2>
+      <input id="search" placeholder="Jaise percentage, marks, resume">
+      <br><button onclick="searchTool()">Search</button>
+      <p id="searchResult"></p>
+    </div>
+    <div class="box">
+      <h2>🧮 Percentage Calculator</h2>
+      <p>Apne marks bharo aur percentage nikalo.</p>
+      <label>Obtained Marks:</label><br>
+      <input type="number" id="obtained" placeholder="Jaise 375" min="0"><br>
+      <label>Total Marks:</label><br>
+      <input type="number" id="total" placeholder="Jaise 500" min="1"><br>
+      <button onclick="calculate()">Calculate</button>
+      <p id="answer"></p>
+    </div>
+    <div class="box"><h2>📄 Resume Maker</h2><p>Resume tool jald hi yahan add hoga.</p></div>
+    <div class="box"><h2>🖼️ Image Tools</h2><p>Photo tools jald hi yahan add honge.</p></div>
+    <div class="box"><h2>📁 PDF Tools</h2><p>PDF tools jald hi yahan add honge.</p></div>
+  </main>
+  <footer>KaamKhoj © 2026</footer>
+  <script>
+    function searchTool() {
+      let q = document.getElementById("search").value.toLowerCase();
+      let result = "Ye tool abhi available nahi hai.";
+      if (q.includes("percentage") || q.includes("marks")) {
+        result = "Percentage Calculator neeche diya gaya hai.";
+      } else if (q.includes("resume") || q.includes("cv")) {
+        result = "Resume Maker jald aayega.";
+      } else if (q.includes("photo") || q.includes("image")) {
+        result = "Image Tools jald aayenge.";
+      } else if (q.includes("pdf")) {
+        result = "PDF Tools jald aayenge.";
+      }
+      document.getElementById("searchResult").textContent = result;
+    }
+    function calculate() {
+      const marksInput = document.getElementById("obtained").value;
+      const totalInput = document.getElementById("total").value;
+      const answer = document.getElementById("answer");
+      const marks = Number(marksInput);
+      const total = Number(totalInput);
+      if (marksInput === "" || totalInput === "" || total <= 0 ||
+          marks < 0 || marks > total) {
+        answer.textContent = "Sahi marks aur total marks bharo.";
+        return;
+      }
+      answer.textContent = "Your Percentage: " + ((marks / total) * 100).toFixed(2) + "%";
+    }
+  </script>
+</body>
+</html>
